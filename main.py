@@ -1,4 +1,6 @@
 from datetime import datetime, date
+from os import walk
+from time import sleep
 
 import requests
 from pathlib import Path
@@ -12,6 +14,8 @@ NASA_TOKEN = env('NASA_TOKEN')
 IMAGES_DIR = env('IMAGES_DIR')
 BOT_TOKEN = env('BOT_TOKEN')
 CHAT_ID = env('CHAT_ID')
+TIMEOUT = env.int('TIMEOUT', 60*60*24)
+
 
 def get_image(url: str, file_path: str, params=None) -> None:
     response = requests.get(url, params=params)
@@ -77,19 +81,28 @@ def get_last_epic() -> None:
 
         dir_path = f'{IMAGES_DIR}/epic'
         Path(dir_path).mkdir(parents=True, exist_ok=True)
-        filename = f'{dir_path}/{ epic_data["image"]}.png'
+        filename = f'{dir_path}/{epic_data["image"]}.png'
         get_image(image_url, filename, params=params)
+
+
+def give_image():
+    for (dir_path, dir_names, filenames) in walk(IMAGES_DIR):
+        for filename in filenames:
+            yield f'{dir_path}\\{filename}'
 
 
 def send_it_all():
     bot = telegram.Bot(token=BOT_TOKEN)
-    bot.send_message(chat_id=CHAT_ID, text="I'm sorry.")
-    bot.send_photo(chat_id=CHAT_ID, photo=open('images/epic/epic_1b_20211109003633.png', 'rb'))
+
+    images = give_image()
+    while True:
+        bot.send_photo(chat_id=CHAT_ID, photo=open(next(images), 'rb'))
+        sleep(TIMEOUT)
 
 
 if __name__ == '__main__':
-    # get_photos_by_flight(108)
-    # get_apod_images()
-    # get_last_epic()
+    get_photos_by_flight(108)
+    get_apod_images()
+    get_last_epic()
 
     send_it_all()
