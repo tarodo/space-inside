@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 import requests
 from pathlib import Path
 from environs import Env
@@ -6,6 +8,7 @@ env = Env()
 env.read_env()
 
 NASA_TOKEN = env('NASA_TOKEN')
+IMAGES_DIR = 'images'
 
 
 def get_file_extension(filename: str) -> str:
@@ -33,13 +36,13 @@ def get_photos_by_flight(flight_id: int, dir_path: str) -> None:
         get_image(image_url, filename)
 
 
-def get_apod_images(dir_path: str, image_count: int = 2) -> None:
+def get_apod_images(image_count: int = 2) -> None:
     apod_url = 'https://api.nasa.gov/planetary/apod'
     params = {
         'api_key': NASA_TOKEN,
         'count': image_count
     }
-    dir_path += '/apod'
+    dir_path = f'{IMAGES_DIR}/apod'
     Path(dir_path).mkdir(parents=True, exist_ok=True)
     response = requests.get(apod_url, params=params)
     response.raise_for_status()
@@ -54,13 +57,25 @@ def get_apod_images(dir_path: str, image_count: int = 2) -> None:
         get_image(image_url, filename)
 
 
-def get_last_epic(nasa_token: str) -> None:
-    pass
+def generate_epic_link(image_date: date, image_name: str) -> str:
+    url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date.year}/{image_date.month:02d}/{image_date.day:02d}' \
+          f'/png/{image_name}.png '
+    return url
+
+
+def get_last_epic() -> None:
+    url = 'https://api.nasa.gov/EPIC/api/natural'
+    params = {
+        'api_key': NASA_TOKEN
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    epic_data = response.json()[0]
+    epic_date = datetime.fromisoformat(epic_data['date']).date()
+    epic_url = generate_epic_link(epic_date, epic_data['image'])
 
 
 if __name__ == '__main__':
-    image_dir = 'images'
-    Path(image_dir).mkdir(exist_ok=True)
-    img_url = 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg'
     # get_photos_by_flight(108, image_dir)
-    get_apod_images(image_dir)
+    # get_apod_images()
+    get_last_epic()
