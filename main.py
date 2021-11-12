@@ -69,17 +69,17 @@ def get_last_epic() -> None:
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
-    epic_data = response.json()[0]
-    epic_date = datetime.fromisoformat(epic_data['date']).date()
-    image_url = generate_epic_link(epic_date, epic_data['image'])
+    for epic_data in response.json():
+        epic_date = datetime.fromisoformat(epic_data['date']).date()
+        image_url = generate_epic_link(epic_date, epic_data['image'])
 
-    dir_path = f'{IMAGES_DIR}/epic'
-    Path(dir_path).mkdir(parents=True, exist_ok=True)
-    filename = f'{dir_path}/{ epic_data["image"]}.png'
-    get_image(image_url, filename, params=params)
+        dir_path = f'{IMAGES_DIR}/epic'
+        Path(dir_path).mkdir(parents=True, exist_ok=True)
+        filename = f'{dir_path}/{ epic_data["image"]}.png'
+        get_image(image_url, filename, params=params)
 
 
 if __name__ == '__main__':
     get_photos_by_flight(108)
-    # get_apod_images()
+    get_apod_images()
     get_last_epic()
