@@ -3,13 +3,15 @@ from datetime import datetime, date
 import requests
 from pathlib import Path
 from environs import Env
+import telegram
 
 env = Env()
 env.read_env()
 
 NASA_TOKEN = env('NASA_TOKEN')
 IMAGES_DIR = env('IMAGES_DIR')
-
+BOT_TOKEN = env('BOT_TOKEN')
+CHAT_ID = env('CHAT_ID')
 
 def get_image(url: str, file_path: str, params=None) -> None:
     response = requests.get(url, params=params)
@@ -79,7 +81,15 @@ def get_last_epic() -> None:
         get_image(image_url, filename, params=params)
 
 
+def send_it_all():
+    bot = telegram.Bot(token=BOT_TOKEN)
+    bot.send_message(chat_id=CHAT_ID, text="I'm sorry.")
+
+
+
 if __name__ == '__main__':
-    get_photos_by_flight(108)
-    get_apod_images()
-    get_last_epic()
+    # get_photos_by_flight(108)
+    # get_apod_images()
+    # get_last_epic()
+
+    send_it_all()
