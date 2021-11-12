@@ -11,10 +11,6 @@ NASA_TOKEN = env('NASA_TOKEN')
 IMAGES_DIR = env('IMAGES_DIR')
 
 
-def get_file_extension(filename: str) -> str:
-    return Path(filename).suffix[1:]
-
-
 def get_image(url: str, file_path: str, params=None) -> None:
     response = requests.get(url, params=params)
     response.raise_for_status()
@@ -23,10 +19,13 @@ def get_image(url: str, file_path: str, params=None) -> None:
         file.write(response.content)
 
 
-def get_photos_by_flight(flight_id: int, dir_path: str) -> None:
+def get_photos_by_flight(flight_id: int) -> None:
     flight_url = f'https://api.spacexdata.com/v3/launches/{flight_id}'
     response = requests.get(flight_url)
     response.raise_for_status()
+
+    dir_path = f'{IMAGES_DIR}/spacex'
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
 
     launch = response.json()
     image_url: str
@@ -73,6 +72,7 @@ def get_last_epic() -> None:
     epic_data = response.json()[0]
     epic_date = datetime.fromisoformat(epic_data['date']).date()
     image_url = generate_epic_link(epic_date, epic_data['image'])
+
     dir_path = f'{IMAGES_DIR}/epic'
     Path(dir_path).mkdir(parents=True, exist_ok=True)
     filename = f'{dir_path}/{ epic_data["image"]}.png'
@@ -80,6 +80,6 @@ def get_last_epic() -> None:
 
 
 if __name__ == '__main__':
-    # get_photos_by_flight(108, image_dir)
+    get_photos_by_flight(108)
     # get_apod_images()
     get_last_epic()
