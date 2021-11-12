@@ -41,7 +41,7 @@ def get_photos_by_flight(flight_id: int) -> None:
         get_image(image_url, filename)
 
 
-def get_apod_images(image_count: int = 2) -> None:
+def get_apod_images(image_count: int = 10) -> None:
     apod_url = 'https://api.nasa.gov/planetary/apod'
     params = {
         'api_key': NASA_TOKEN,
