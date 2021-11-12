@@ -8,15 +8,15 @@ env = Env()
 env.read_env()
 
 NASA_TOKEN = env('NASA_TOKEN')
-IMAGES_DIR = 'images'
+IMAGES_DIR = env('IMAGES_DIR')
 
 
 def get_file_extension(filename: str) -> str:
     return Path(filename).suffix[1:]
 
 
-def get_image(url: str, file_path: str) -> None:
-    response = requests.get(url)
+def get_image(url: str, file_path: str, params=None) -> None:
+    response = requests.get(url, params=params)
     response.raise_for_status()
 
     with open(file_path, 'wb') as file:
@@ -59,7 +59,7 @@ def get_apod_images(image_count: int = 2) -> None:
 
 def generate_epic_link(image_date: date, image_name: str) -> str:
     url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date.year}/{image_date.month:02d}/{image_date.day:02d}' \
-          f'/png/{image_name}.png '
+          f'/png/{image_name}.png'
     return url
 
 
@@ -72,7 +72,11 @@ def get_last_epic() -> None:
     response.raise_for_status()
     epic_data = response.json()[0]
     epic_date = datetime.fromisoformat(epic_data['date']).date()
-    epic_url = generate_epic_link(epic_date, epic_data['image'])
+    image_url = generate_epic_link(epic_date, epic_data['image'])
+    dir_path = f'{IMAGES_DIR}/epic'
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
+    filename = f'{dir_path}/{ epic_data["image"]}.png'
+    get_image(image_url, filename, params=params)
 
 
 if __name__ == '__main__':
