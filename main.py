@@ -84,7 +84,7 @@ def get_last_epic() -> None:
 def send_it_all():
     bot = telegram.Bot(token=BOT_TOKEN)
     bot.send_message(chat_id=CHAT_ID, text="I'm sorry.")
-
+    bot.send_photo(chat_id=CHAT_ID, photo=open('images/epic/epic_1b_20211109003633.png', 'rb'))
 
 
 if __name__ == '__main__':
