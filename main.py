@@ -81,7 +81,7 @@ def get_last_epic() -> None:
 def give_image():
     for (dir_path, dir_names, filenames) in walk(IMAGES_DIR):
         for filename in filenames:
-            yield f'{dir_path}\\{filename}'
+            yield Path(dir_path) / filename
 
 
 def send_images():
