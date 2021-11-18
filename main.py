@@ -7,11 +7,7 @@ from pathlib import Path
 from environs import Env
 import telegram
 
-NASA_TOKEN = env('NASA_TOKEN')
-IMAGES_DIR = env('IMAGES_DIR')
-BOT_TOKEN = env('BOT_TOKEN')
-CHAT_ID = env('CHAT_ID')
-TIMEOUT = env.int('TIMEOUT', 60*60*24)
+env = Env()
 
 
 def download_image(url: str, file_path: str, params=None) -> None:
@@ -98,8 +94,13 @@ def send_images():
 
 
 if __name__ == '__main__':
-    env = Env()
     env.read_env()
+
+    NASA_TOKEN = env('NASA_TOKEN')
+    IMAGES_DIR = env('IMAGES_DIR')
+    BOT_TOKEN = env('BOT_TOKEN')
+    CHAT_ID = env('CHAT_ID')
+    TIMEOUT = env.int('TIMEOUT', 60 * 60 * 24)
 
     get_photos_by_flight(108)
     get_apod_images()
