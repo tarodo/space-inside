@@ -7,9 +7,6 @@ from pathlib import Path
 from environs import Env
 import telegram
 
-env = Env()
-env.read_env()
-
 NASA_TOKEN = env('NASA_TOKEN')
 IMAGES_DIR = env('IMAGES_DIR')
 BOT_TOKEN = env('BOT_TOKEN')
@@ -101,6 +98,9 @@ def send_it_all():
 
 
 if __name__ == '__main__':
+    env = Env()
+    env.read_env()
+
     get_photos_by_flight(108)
     get_apod_images()
     get_last_epic()
