@@ -78,7 +78,7 @@ def get_last_epic() -> None:
         download_image(image_url, filename, params=params)
 
 
-def give_image():
+def give_images_paths():
     for (dir_path, dir_names, filenames) in walk(IMAGES_DIR):
         for filename in filenames:
             yield Path(dir_path) / filename
@@ -87,9 +87,10 @@ def give_image():
 def send_images():
     bot = telegram.Bot(token=BOT_TOKEN)
 
-    images = give_image()
+    image_path = give_images_paths()
     while True:
-        bot.send_photo(chat_id=CHAT_ID, photo=open(next(images), 'rb'))
+        with open(next(image_path), 'rb') as image_file:
+            bot.send_photo(chat_id=CHAT_ID, photo=image_file)
         sleep(TIMEOUT)
 
 
