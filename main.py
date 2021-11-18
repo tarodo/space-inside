@@ -14,7 +14,7 @@ CHAT_ID = env('CHAT_ID')
 TIMEOUT = env.int('TIMEOUT', 60*60*24)
 
 
-def get_image(url: str, file_path: str, params=None) -> None:
+def download_image(url: str, file_path: str, params=None) -> None:
     response = requests.get(url, params=params)
     response.raise_for_status()
 
@@ -35,7 +35,7 @@ def get_photos_by_flight(flight_id: int) -> None:
     for image_url in launch['links']['flickr_images']:
         image_name = Path(image_url).name
         filename = f'{dir_path}/{image_name}'
-        get_image(image_url, filename)
+        download_image(image_url, filename)
 
 
 def get_apod_images(image_count: int = 10) -> None:
@@ -56,7 +56,7 @@ def get_apod_images(image_count: int = 10) -> None:
         image_url = apod_element['url']
         image_name = Path(image_url).name
         filename = f'{dir_path}/{image_name}'
-        get_image(image_url, filename)
+        download_image(image_url, filename)
 
 
 def generate_epic_link(image_date: date, image_name: str) -> str:
@@ -79,7 +79,7 @@ def get_last_epic() -> None:
         dir_path = f'{IMAGES_DIR}/epic'
         Path(dir_path).mkdir(parents=True, exist_ok=True)
         filename = f'{dir_path}/{epic_data["image"]}.png'
-        get_image(image_url, filename, params=params)
+        download_image(image_url, filename, params=params)
 
 
 def give_image():
@@ -88,7 +88,7 @@ def give_image():
             yield f'{dir_path}\\{filename}'
 
 
-def send_it_all():
+def send_images():
     bot = telegram.Bot(token=BOT_TOKEN)
 
     images = give_image()
@@ -105,4 +105,4 @@ if __name__ == '__main__':
     get_apod_images()
     get_last_epic()
 
-    send_it_all()
+    send_images()
