@@ -25,7 +25,6 @@ def get_photos_by_flight(flight_id: int, images_dir: str) -> None:
     Path(dir_path).mkdir(parents=True, exist_ok=True)
 
     launch = response.json()
-    image_url: str
     for image_url in launch['links']['flickr_images']:
         image_name = Path(image_url).name
         filename = f'{dir_path}/{image_name}'
@@ -43,7 +42,6 @@ def get_apod_images(nasa_token: str, images_dir: str, image_count: int = 10) -> 
     response = requests.get(apod_url, params=params)
     response.raise_for_status()
     apod_heap = response.json()
-    image_url: str
     for apod_element in apod_heap:
         if 'url' not in apod_element:
             continue
@@ -96,7 +94,7 @@ if __name__ == '__main__':
     env = Env()
     env.read_env()
 
-    get_photos_by_flight(108, images_dir=env('IMAGES_DIR'))
+    get_photos_by_flight(108, env('IMAGES_DIR'))
     get_apod_images(env('NASA_TOKEN'), env('IMAGES_DIR'))
     get_last_epic(env('NASA_TOKEN'), env('IMAGES_DIR'))
 
